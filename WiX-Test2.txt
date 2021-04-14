@@ -1,0 +1,5 @@
+WiX-Test2.txt
+
+Diese Datei soll in ein Verzeichnis auf dem Zielrechner kopiert werden.
+
+Der Benutzer kann in einem Dialogfenster das Zielverzeichnis auswählen.

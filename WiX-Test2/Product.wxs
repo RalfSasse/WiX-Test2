@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Name="WiX_Test2" Language="1033" Version="1.0.0.0" Manufacturer="" UpgradeCode="dc380b09-81f4-42e9-99df-6476bd119583">
+	<Product Id="*" Name="WiX-Test2" Language="1033" Version="1.0.0.0" Manufacturer="RalfSasse" UpgradeCode="dc380b09-81f4-42e9-99df-6476bd119583">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
-		<MediaTemplate />
+		
+		<!-- Hier wird mit dem Parameter "EmbedCab" festgelegt, dass die .CAB-Datei
+			 (die die Textdatei WiX-Test2.txt enthält) in die .MSI-Datei eingebettet wird. -->
+		
+		<MediaTemplate EmbedCab="yes"/>
 
-		<Feature Id="ProductFeature" Title="WiX_Test2" Level="1">
+		<!-- Damit während der Installation ein Dialogfenster erscheint, muss dem Projekt
+		     ein Verweis hinzugefügt werden ("Add a Reference"). Dies macht man über den
+			 Visual Studio-Menüpunkt "Projekt - Verweis hinzufügen".
+			 Verwiesen wird auf die DLL-Datei "WiXUIExtension.dll", die sich im Verzeichnis 
+			 "C:\Programme\WiX Toolset v3.11\bin" befindet. -->
+
+		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+		<UIRef Id="WixUI_InstallDir" />
+
+		<Feature Id="ProductFeature" Title="WiX-Test2" Level="1">
 			<ComponentGroupRef Id="ProductComponents" />
 		</Feature>
 	</Product>
@@ -14,17 +27,29 @@
 	<Fragment>
 		<Directory Id="TARGETDIR" Name="SourceDir">
 			<Directory Id="ProgramFilesFolder">
-				<Directory Id="INSTALLFOLDER" Name="WiX_Test2" />
+				<Directory Id="INSTALLFOLDER" Name="WiX-Test2" />
 			</Directory>
 		</Directory>
+
+		<!-- Hier wird das Dialogfenster eingefügt, in dem der Benutzer einstellen kann,
+		     in welches Verzeichnis die Datei kopiert werden soll. -->
+
+		<Property Id="APPLICATIONFOLDER" Value="WiX-Test2" />
+		
 	</Fragment>
 
 	<Fragment>
 		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-			<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
-			<!-- <Component Id="ProductComponent"> -->
-				<!-- TODO: Insert files, registry keys, and other resources here. -->
-			<!-- </Component> -->
+			
+			<!-- Hier wird die Datei angegeben, die auf den Zielrechner kopiert werden soll.
+			     Sie befindet sich eine Verzeichnis-Ebene oberhalb dieser WXS-Datei, daher
+				 die beiden Punkte im Pfad. Die eindeutige GUID wurde mit Visual Studio erzeugt
+				 (unter dem Menüpunkt "Extras - GUID erstellen") -->
+			
+			<Component Id="CMP_WiXTest2TXT" Guid="7EFFA4FC-ADE0-4DBF-8AF1-D40ADEDE0AF8">
+				<File Id="FILE_MyProgramDir_WiXTest2TXT" Source="../WiX-Test2.txt" KeyPath="yes" />
+			</Component>
+			
 		</ComponentGroup>
 	</Fragment>
 </Wix>
