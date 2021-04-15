@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+<!-- Namespace der WixNetFxExtension dem Projekt hinzufügen
+     (wird gebraucht um festzustellen, ob auf dem Zielrechner .NET-Framework installiert ist) -->
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+  
 	<Product Id="*" Name="WiX-Test2" Language="1033" Version="1.0.0.0" Manufacturer="RalfSasse" UpgradeCode="dc380b09-81f4-42e9-99df-6476bd119583">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
@@ -11,13 +17,23 @@
 		<MediaTemplate EmbedCab="yes"/>
 
 		<!-- Damit während der Installation ein Dialogfenster erscheint, muss dem Projekt
-		     ein Verweis hinzugefügt werden ("Add a Reference"). Dies macht man über den
+			 ein Verweis hinzugefügt werden ("Add a Reference"). Dies macht man über den
 			 Visual Studio-Menüpunkt "Projekt - Verweis hinzufügen".
 			 Verwiesen wird auf die DLL-Datei "WiXUIExtension.dll", die sich im Verzeichnis 
 			 "C:\Programme\WiX Toolset v3.11\bin" befindet. -->
 
 		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
 		<UIRef Id="WixUI_InstallDir" />
+    
+		 <!-- Hier wird geprüft, ob mindestens die Version 4.8 des .NET-Frameworks auf dem
+			 Zielrechner installiert ist. Anderenfalls wird die Installation abgebrochen.
+			 Dafür muss man dem Projekt einen Verweis auf "WixNetFxExtension" hinzufügen.
+			 https://www.mking.net/blog/detecting-dotnet-framework-versions-with-wix -->
+    
+		<PropertyRef Id='WIXNETFX4RELEASEINSTALLED'/>
+		<Condition Message='This setup requires the .NET Framework 4.8 (or greater) to be installed.'>
+			<![CDATA[Installed OR (WIXNETFX4RELEASEINSTALLED >= "#528040")]]>
+		</Condition>
 
 		<Feature Id="ProductFeature" Title="WiX-Test2" Level="1">
 			<ComponentGroupRef Id="ProductComponents" />
@@ -32,7 +48,7 @@
 		</Directory>
 
 		<!-- Hier wird das Dialogfenster eingefügt, in dem der Benutzer einstellen kann,
-		     in welches Verzeichnis die Datei kopiert werden soll. -->
+				 in welches Verzeichnis die Datei kopiert werden soll. -->
 
 		<Property Id="APPLICATIONFOLDER" Value="WiX-Test2" />
 		
@@ -42,7 +58,7 @@
 		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
 			
 			<!-- Hier wird die Datei angegeben, die auf den Zielrechner kopiert werden soll.
-			     Sie befindet sich eine Verzeichnis-Ebene oberhalb dieser WXS-Datei, daher
+			   Sie befindet sich eine Verzeichnis-Ebene oberhalb dieser WXS-Datei, daher
 				 die beiden Punkte im Pfad. Die eindeutige GUID wurde mit Visual Studio erzeugt
 				 (unter dem Menüpunkt "Extras - GUID erstellen") -->
 			
